@@ -3,6 +3,7 @@ import pool from "../database/db.js";
 const addProject = async (req, res) => {
   try {
     const { name, description, subtasks, start_time, deadline } = req.body;
+
     const newProject = await pool.query(
       "INSERT INTO projects (name, description, subtasks, start_time, deadline) VALUES($1, $2, $3, $4, $5) RETURNING *",
       [name, description, JSON.stringify(subtasks), start_time, deadline]
@@ -44,4 +45,24 @@ const assignTask = async (req, res) => {
   }
 }
 
-export { addProject, assignTask };
+const trackProgress = async (req, res) => {
+  const project_id = 1;
+  const subtasks = await pool.query(
+    "SELECT subtasks FROM projects WHERE id=$1",
+    [project_id]
+  );
+  const subtask = subtasks.rows[0].subtasks;
+  // const subtaskLength = subtask.length;
+  const completed = subtask.filter((subtask) => {
+    return subtask.status === "completed";
+  });
+  const percentage = progress(subtask, completed);
+  console.log(percentage);
+
+  res.status(201).json({ subtask });
+};
+const progress = (subtasks, completed) => { 
+  return completed.length / subtasks.length;
+}
+
+export { addProject, assignTask,trackProgress };

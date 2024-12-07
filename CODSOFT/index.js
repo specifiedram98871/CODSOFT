@@ -2,6 +2,7 @@ import express from "express";
 import pool from "./database/db.js";
 import userRouter from "./routes/userRoute.js";
 import projectRouter from "./routes/projectRoute.js";
+import { trackProgress } from "./controller/projectController.js";
 import cors from "cors";
 const PORT = 5000;
 const app = express();
@@ -52,17 +53,18 @@ app.get("/todo/:id", async (req, res) => {
 });
 //get all todos
 
-app.get("/todos", async (req, res) => {
-    try {
-        const todos = await pool.query("SELECT * FROM codsoft");
-        res.json({
-            message: "get",
-            todos: todos.rows
-        })
-  } catch (error) {
-    console.log(error);
-  }
-});
+// app.get("/todos", async (req, res) => {
+//     try {
+//         const todos = await pool.query("SELECT * FROM projects");
+//         res.json({
+//             message: "get",
+//             todos: todos.rows
+//         })
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+app.get("/track", trackProgress);
 //delete a todo
 app.delete("/todos/:id", async (req, res) => {
     try {
@@ -93,4 +95,5 @@ app.put("/todos/:id", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log("Server is running");
+  
 });
