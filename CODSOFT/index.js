@@ -10,7 +10,7 @@ const app = express();
 //to allow cross origin
 app.use(
   cors({
-    origin: "http://localhost:5",
+    origin: "http://localhost:5173",
   })
 );
 
@@ -53,17 +53,17 @@ app.get("/todo/:id", async (req, res) => {
 });
 //get all todos
 
-// app.get("/todos", async (req, res) => {
-//     try {
-//         const todos = await pool.query("SELECT * FROM projects");
-//         res.json({
-//             message: "get",
-//             todos: todos.rows
-//         })
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+app.get("/todos", async (req, res) => {
+    try {
+        const todos = await pool.query("SELECT * FROM projects");
+        res.json({
+            message: "get",
+            todos: todos.rows
+        })
+  } catch (error) {
+    console.log(error);
+  }
+});
 app.get("/track", trackProgress);
 //delete a todo
 app.delete("/todos/:id", async (req, res) => {
