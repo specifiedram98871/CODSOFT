@@ -40,3 +40,76 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.project-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.project-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background-color: #ff7043;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.project-card:hover {
+  transform: scale(1.05);
+}
+
+.project-name,
+.subtask-name {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.project-input,
+.subtask-input,
+.project-textarea,
+.subtask-textarea,
+.date-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.date-container {
+  margin-bottom: 10px;
+}
+
+.subtask-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #ffab91;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    padding: 15px;
+  }
+
+  .project-title {
+    font-size: 2rem;
+  }
+}
