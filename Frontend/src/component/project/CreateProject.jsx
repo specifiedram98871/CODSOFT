@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 import { addProject } from "../../redux/projectSlice";
 import Date from "./Date";
 
@@ -37,7 +38,8 @@ const CreateProject = () => {
     setProject({ ...project, subtasks: updatedSubtasks });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    try {
     e.preventDefault();
     if (
       project.name &&
@@ -46,6 +48,27 @@ const CreateProject = () => {
       project.deadline
     ) {
       dispatch(addProject(project));
+      const response = await fetch("http://localhost:5000/project/addproject", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(project),
+      })
+      const data = await response.json();
+      console.log(data);
+      if(data.success){
+        toast(data.message, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });;
+      }
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000); // Hide success message after 3 seconds
       setProject({
@@ -56,6 +79,10 @@ const CreateProject = () => {
         subtasks: [{ name: "", description: "" }],
       });
     }
+      } catch (error) {
+      console.log(error);
+    }
+    
   };
 
   return (
@@ -135,6 +162,18 @@ const CreateProject = () => {
           Create Project
         </button>
       </form>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
