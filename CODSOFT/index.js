@@ -4,96 +4,119 @@ import userRouter from "./routes/userRoute.js";
 import projectRouter from "./routes/projectRoute.js";
 import { trackProgress } from "./controller/projectController.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+
+dotenv.config();
 const PORT = 5000;
 const app = express();
 
-//to allow cross origin
+// Middleware
 app.use(
   cors({
     origin: "http://localhost:5173",
+    credentials: true,
   })
 );
-
 app.use(express.json());
-//routes
+app.use(cookieParser());
 
-//user routes
+// Routes
 app.use("/user", userRouter);
-//project routes
 app.use("/project", projectRouter);
-//create a todo
+
+// Create a todo
 app.post("/todos", async (req, res) => {
   const { name } = req.body;
   try {
-    const newtodo = await pool.query(
+    const newTodo = await pool.query(
       "INSERT INTO codsoft (name) VALUES($1) RETURNING *",
       [name]
     );
-    // console.log(req.body);
     res.json({
       message: "Todo was created",
-      newtodo: newtodo.rows[0]
+      newTodo: newTodo.rows[0],
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error creating todo:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
-//get a todo
 
+// Get a todo
 app.get("/todo/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        // console.log(req.params);
-        const todo = await pool.query("SELECT * FROM codsoft WHERE todo_id = $1", [id]);
-        res.json({
-            message: "get",
-            todo: todo.rows[0]
-        })
-  } catch (error) {}
+  try {
+    const { id } = req.params;
+    const todo = await pool.query("SELECT * FROM codsoft WHERE todo_id = $1", [
+      id,
+    ]);
+    res.json({
+      message: "Todo retrieved",
+      todo: todo.rows[0],
+    });
+  } catch (error) {
+    console.error("Error retrieving todo:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
-//get all todos
 
+// Get all todos
 app.get("/todos", async (req, res) => {
-    try {
-        const todos = await pool.query("SELECT * FROM projects");
-        res.json({
-            message: "get",
-            todos: todos.rows
-        })
+  try {
+    const todos = await pool.query("SELECT * FROM projects");
+    console.log("vayo")
+    // console.log(todos.rows);
+    res.json({
+      todos:todos.rows
+    }
+    );
   } catch (error) {
-    console.log(error);
+    console.error("Error retrieving todos:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Track progress
 app.get("/track", trackProgress);
-//delete a todo
+
+// Delete a todo
 app.delete("/todos/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedTodo = await pool.query("DELETE FROM codsoft WHERE todo_id = $1", [id]);
-        res.json({
-            message: "deleted",
-            deletedTodo
-        })
+  try {
+    const { id } = req.params;
+    const deletedTodo = await pool.query(
+      "DELETE FROM codsoft WHERE todo_id = $1",
+      [id]
+    );
+    res.json({
+      message: "Todo deleted",
+      deletedTodo,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting todo:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
-//update a todo
+
+// Update a todo
 app.put("/todos/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name } = req.body;
-        const updatedTodo = await pool.query("UPDATE codsoft SET name =$1 WHERE todo_id =$2", [name, id]);
-        res.json({
-            message: "updated",
-            updatedTodo: updatedTodo.rows[2]
-        })
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const updatedTodo = await pool.query(
+      "UPDATE codsoft SET name = $1 WHERE todo_id = $2 RETURNING *",
+      [name, id]
+    );
+    res.json({
+      message: "Todo updated",
+      updatedTodo: updatedTodo.rows[0],
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error updating todo:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
 app.listen(PORT, () => {
-  console.log("Server is running", PORT);
-  
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -9,6 +9,7 @@ const addProject = async (req, res) => {
       [name, description, JSON.stringify(subtasks), start_time, deadline]
     );
     res.status(201).json({
+      success: true,
       message: "Project was created",
       newProject: newProject.rows[0],
     });
@@ -65,4 +66,32 @@ const progress = (subtasks, completed) => {
   return completed.length / subtasks.length;
 }
 
-export { addProject, assignTask,trackProgress };
+const editProject = async (req, res) => {
+  const { project_id } = req.params;
+  const id = project_id;
+  console.log("id", project_id);
+  const data = await pool.query("SELECT * FROM projects WHERE id = $1", [project_id]);
+  console.log(data.rows[0]);
+  const { name, description, start_time, deadline } = req.body;
+  try { 
+     const query = `
+      UPDATE projects
+      SET name = $1, description = $2, start_time = $3, deadline = $4
+      WHERE id = $5
+      RETURNING *;
+    `;
+    const values = [name, description, start_time, deadline, id];
+    const result = await pool.query(query, values);
+    if (result.rows.length > 0) {
+      const updatedProject = result.rows[0];
+      res.status(200).json({ message: "Project updated", updatedProject });
+    } else {
+      res.status(404).json({ message: "Project not found" });
+    }
+
+  }
+  catch (error) {
+    console.log(error);
+  }
+}
+export { addProject, assignTask,trackProgress,editProject };
