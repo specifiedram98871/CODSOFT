@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const projectSlice = createSlice({
   name: "project",
   initialState: [],
@@ -43,6 +44,21 @@ const projectSlice = createSlice({
     },
   },
 });
+
+export const projectApi = createApi({
+  reducerPath: "projectApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000",
+    credentials: "include",
+  }),
+  endpoints: (builder) => ({
+    getProjects: builder.query({
+      query: () => "/todos",
+    }),
+  }),
+});
+
+export const { useGetProjectsQuery } = projectApi;
 
 export const {
   setProjects,
