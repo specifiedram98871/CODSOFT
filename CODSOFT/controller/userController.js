@@ -63,7 +63,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 const getAllUser = async (req, res) => {
   try {
     const newQuery = await pool.query("SELECT * FROM codsoft");
@@ -88,13 +87,14 @@ const adminLogin = async (req, res) => {
   } catch (error) {}
 };
 
-
-const userDetails = async (req, res) => { 
+const userDetails = async (req, res) => {
   const user = req.user;
-  res.status(200).json(
-    user
-   );
-}
 
+  if (!user) {
+    console.log("User not found");
+    return res.status(404).json({ message: "User not found" });
+  };
+  res.status(200).json(user);
+};
 
-export { registerUser, loginUser, getAllUser ,userDetails};
+export { registerUser, loginUser, getAllUser, userDetails };

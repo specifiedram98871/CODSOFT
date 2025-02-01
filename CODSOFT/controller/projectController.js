@@ -19,6 +19,23 @@ const addProject = async (req, res) => {
   }
 };
 
+const deleteProject = async (req, res) => { 
+  const { project_id } = req.params;
+  try {
+    const query = "DELETE FROM projects WHERE id =$1 RETURNING *";
+    const result = await pool.query(query, [project_id]);
+    console.log(result.rows[0]);
+    if (result.rows.length > 0) {
+      const deletedProject = result.rows[0];
+      res.status(200).json({ message: "Project deleted", deletedProject });
+    } else {
+      res.status(404).json({ message: "Project not found" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const assignTask = async (req, res) => {
   try {
    
@@ -94,4 +111,4 @@ const editProject = async (req, res) => {
     console.log(error);
   }
 }
-export { addProject, assignTask,trackProgress,editProject };
+export { addProject, assignTask,trackProgress,editProject,deleteProject };

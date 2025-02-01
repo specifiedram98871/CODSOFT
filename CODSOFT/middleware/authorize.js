@@ -35,17 +35,20 @@ const authenticate = async (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const user = await returnUser(decoded.email);
-    // console.log("user",user)
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
     req.user = user;
     next();
   } catch (error) {
-    console.error("Authentication error:", error);
-    res.status(401).json({ message: "Invalid token" });
+    // console.error("Authentication error:", error);
+    if (error === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
+
 
 const returnUser = async (email) => {
   const result = await pool.query("SELECT * FROM codsoft WHERE email = $1", [
