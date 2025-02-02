@@ -86,10 +86,11 @@ const progress = (subtasks, completed) => {
 const editProject = async (req, res) => {
   const { project_id } = req.params;
   const id = project_id;
-  console.log("id", project_id);
+  // console.log("id", project_id);
   const data = await pool.query("SELECT * FROM projects WHERE id = $1", [project_id]);
-  console.log(data.rows[0]);
+  // console.log(data.rows[0]);
   const { name, description, start_time, deadline } = req.body;
+  // console.log(name, description, start_time, deadline);
   try { 
      const query = `
       UPDATE projects
