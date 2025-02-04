@@ -14,17 +14,17 @@ import { useEffect } from "react";
 function App() {
   const response = useLoadUserQuery();
   const dispatch = useDispatch();
-
+ 
   useEffect(() => {
     dispatch(setUser(response.data));
   }, [dispatch, response.data]);
-
-  const { user, isAuthenticated, loading } = useSelector((state) => state.user);
-  const isAdmin = (user) => {
+  
+  const {user,isAuthenticated ,loading }= useSelector((state) => state.user);
+  const isAdmin = (user)=> {
     if (user && user.role === "admin") return true;
     return false;
-  };
-
+  }
+  
   // console.log(isAdmin(user), user ,response);
 
   const routes = [

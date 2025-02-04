@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
-import {
-  addProject,
-  useCreateProjectMutation,
-  useUpdateProjectMutation,
-} from "../../redux/projectSlice";
+import { addProject } from "../../redux/projectSlice";
 import Date from "./Date";
 
-const CreateProject = ({ existingProject, onClose }) => {
-  const [updateProject] = useUpdateProjectMutation();
+const CreateProject = () => {
   const dispatch = useDispatch();
-  const [createProject] = useCreateProjectMutation();
   const [project, setProject] = useState({
     name: "",
     description: "",
@@ -20,12 +14,6 @@ const CreateProject = ({ existingProject, onClose }) => {
     subtasks: [{ name: "", description: "" }],
   });
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    if (existingProject) {
-      setProject(existingProject);
-    }
-  }, [existingProject]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,22 +39,26 @@ const CreateProject = ({ existingProject, onClose }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     try {
-      if (
-        project.name &&
-        project.description &&
-        project.start_time &&
-        project.deadline
-      ) {
-        if (existingProject) {
-          dispatch(updateProject(project));
-          const response=await updateProject(project).unwrap();
-        } else {
-          dispatch(addProject(project));
-          await createProject(project).unwrap();
-        }
-        toast("Project saved successfully!", {
+    e.preventDefault();
+    if (
+      project.name &&
+      project.description &&
+      project.start_time &&
+      project.deadline
+    ) {
+      dispatch(addProject(project));
+      const response = await fetch("http://localhost:5000/project/addproject", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(project),
+      })
+      const data = await response.json();
+      console.log(data);
+      if(data.success){
+        toast(data.message, {
           position: "bottom-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -75,28 +67,29 @@ const CreateProject = ({ existingProject, onClose }) => {
           draggable: true,
           progress: undefined,
           theme: "light",
-        });
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 3000); // Hide success message after 3 seconds
-        setProject({
-          name: "",
-          description: "",
-          start_time: "",
-          deadline: "",
-          subtasks: [{ name: "", description: "" }],
-        });
-        if (onClose) onClose();
+        });;
       }
-    } catch (error) {
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000); // Hide success message after 3 seconds
+      setProject({
+        name: "",
+        description: "",
+        start_time: "",
+        deadline: "",
+        subtasks: [{ name: "", description: "" }],
+      });
+    }
+      } catch (error) {
       console.log(error);
     }
+    
   };
 
   return (
     <div className="create-project">
-      <h2>{existingProject ? "Edit Project" : "Create New Project"}</h2>
+      <h2>Create New Project</h2>
       {success && (
-        <p className="success-message">Project saved successfully!</p>
+        <p className="success-message">Project created successfully!</p>
       )}
       <form onSubmit={handleSubmit}>
         <div>
@@ -165,18 +158,9 @@ const CreateProject = ({ existingProject, onClose }) => {
             Add Subtask
           </button>
         </div>
-        <div className="flex justify-end mt-4">
-          <button
-            type="button"
-            className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button type="submit" className="submit-btn">
-            {existingProject ? "Save Changes" : "Create Project"}
-          </button>
-        </div>
+        <button type="submit" className="submit-btn">
+          Create Project
+        </button>
       </form>
       <ToastContainer
         position="bottom-right"
