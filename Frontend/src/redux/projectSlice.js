@@ -55,10 +55,35 @@ export const projectApi = createApi({
     getProjects: builder.query({
       query: () => "/todos",
     }),
+    createProject: builder.mutation({
+      query: (project) => ({
+        url: "project/addproject",
+        method: "POST",
+        body: project,
+      }),
+    }),
+    deleteProject: builder.mutation({
+      query: (project_id) => ({
+        url: `project/delete/${project_id}`,
+        method: "DELETE",
+      }),
+    }),
+    updateProject: builder.mutation({
+      query: (project) => ({
+        url: `project/edit/${project.id}`,
+        method: "POST",
+        body: project,
+      }),
+    }),
   }),
 });
 
-export const { useGetProjectsQuery } = projectApi;
+export const {
+  useGetProjectsQuery,
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+  useUpdateProjectMutation,
+} = projectApi;
 
 export const {
   setProjects,
@@ -66,5 +91,6 @@ export const {
   assignTask,
   trackProgress,
   updateSubtask,
+  removeProject,
 } = projectSlice.actions;
 export default projectSlice.reducer;
