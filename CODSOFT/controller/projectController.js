@@ -19,6 +19,20 @@ const addProject = async (req, res) => {
   }
 };
 
+const projectList = async (req, res) => {
+  try {
+    const projects = await pool.query("SELECT * FROM projects");
+    if(projects.rows.length > 0){
+      res.status(200).json({ projects: projects.rows });
+    }
+    else{
+      res.status(404).json({ message: "Projects not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 const deleteProject = async (req, res) => { 
   const { project_id } = req.params;
   try {
@@ -40,7 +54,7 @@ const assignTask = async (req, res) => {
   try {
    
     const { project_id,subtask_id} = req.params;
-    const user = "bangdu";
+    
     
     const project = await pool.query("SELECT subtasks FROM projects WHERE id = $1", [project_id]);
     const subtasks = project.rows[0].subtasks;
@@ -85,31 +99,36 @@ const progress = (subtasks, completed) => {
 
 const editProject = async (req, res) => {
   const { project_id } = req.params;
-  const id = project_id;
-  // console.log("id", project_id);
-  const data = await pool.query("SELECT * FROM projects WHERE id = $1", [project_id]);
-  // console.log(data.rows[0]);
-  const { name, description, start_time, deadline } = req.body;
-  // console.log(name, description, start_time, deadline);
-  try { 
-     const query = `
+  const { name, description, start_time, deadline, subtasks } = req.body;
+  console.log(subtasks);
+
+  try {
+    const query = `
       UPDATE projects
-      SET name = $1, description = $2, start_time = $3, deadline = $4
-      WHERE id = $5
+      SET name = $1, description = $2, start_time = $3, deadline = $4, subtasks = $5
+      WHERE id = $6
       RETURNING *;
     `;
-    const values = [name, description, start_time, deadline, id];
+    const values = [
+      name,
+      description,
+      start_time,
+      deadline,
+      JSON.stringify(subtasks),
+      project_id,
+    ];
     const result = await pool.query(query, values);
+
     if (result.rows.length > 0) {
       const updatedProject = result.rows[0];
       res.status(200).json({ message: "Project updated", updatedProject });
     } else {
       res.status(404).json({ message: "Project not found" });
     }
-
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
-export { addProject, assignTask,trackProgress,editProject,deleteProject };
+};
+
+export { addProject, assignTask,trackProgress,editProject,deleteProject,projectList };
