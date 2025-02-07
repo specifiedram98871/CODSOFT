@@ -72,13 +72,20 @@ export const userApi = createApi({
     loadUser: builder.query({
       query: () => "/user/me",
       
+    }),
+    logOutUser: builder.mutation({
+      query: () => ({
+        url: "/user/logout",
+        method: "GET",
+      }),
     })
+
   }),
 });
 
 export const { setUser, updateUser, setLoading, logout } = userSlice.actions;
 export default userSlice.reducer;
-export const { useLogInUserMutation,useGetUserQuery, useGetAllUserQuery, useLogUserMutation,useLoadUserQuery } =
+export const { useLogInUserMutation,useGetUserQuery, useGetAllUserQuery, useLogUserMutation,useLoadUserQuery,useLogOutUserMutation } =
   userApi;
 
 

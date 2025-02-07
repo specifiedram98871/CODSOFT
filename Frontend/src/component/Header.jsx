@@ -1,8 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { logout } from "../redux/userSlice";
+import { logout, useLogOutUserMutation } from "../redux/userSlice";
 const Header = ({ user }) => {
+  const [logO] = useLogOutUserMutation();
+  const Out = async() => {
+    const response =await logO().unwrap();
+    if (response) {
+      dispatch(logout());
+      console.log(response);
+    }
+  };
   const dispatch = useDispatch();
   return (
     <header className="bg-blue-600 text-white p-4 shadow-md">
@@ -19,7 +27,7 @@ const Header = ({ user }) => {
             Contact
           </Link>
           { user&&
-            <Link to="/login" className="hover:text-gray-300" onClick={() =>dispatch(logout())}>
+            <Link to="/login" className="hover:text-gray-300" onClick={() => Out()}>
               LogOut
             </Link>}
         </nav>

@@ -51,7 +51,7 @@ const Login = () => {
         <h1 className="mb-4 text-2xl font-bold text-gray-700">Login</h1>
 
         {/* Show Form Validation Error */}
-        {formError && <p className="mb-4 text-sm text-red-500">{formError}</p>}
+        {formError && <p className="mb-4 text-sm text-red-500">register</p>}
 
         {/* Show Login Error */}
         {loginError && (

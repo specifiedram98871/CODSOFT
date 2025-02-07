@@ -1,11 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const initialState = {
+  project: [],
+  loading: false,
+  error: null,
+}
+
 const projectSlice = createSlice({
   name: "project",
-  initialState: [],
+  initialState,
   reducers: {
+    getProjectStarted: (state) => {
+      state.loading = true;
+    },
     setProjects: (state, action) => {
-      return action.payload; // Replaces the current state with fetched projects
+      state.project = action.payload;
+      state.loading = false;
+      state.error = null;
     },
     addProject: (state, action) => {
       state.push(action.payload); // Adds a new project
@@ -53,12 +65,33 @@ export const projectApi = createApi({
   }),
   endpoints: (builder) => ({
     getProjects: builder.query({
-      query: () => "/todos",
+      query: () => "/project/projectList",
+    }),
+    addProject: builder.mutation({
+      query: (project) => ({
+        url: "/project/addproject",
+        method: "POST",
+        body: project,
+      }),
+    }),
+    updateProject: builder.mutation({
+      query: (project) => ({
+        url: "/project/edit/" + project.id,
+        method: "POST",
+        body: project,
+      }),
+    }),
+    deleteProject: builder.mutation({
+      query: (project_id) => ({
+        url: "/project/delete/" + project_id,
+        method: "DELETE",
+      }),
     }),
   }),
+   
 });
 
-export const { useGetProjectsQuery } = projectApi;
+export const { useGetProjectsQuery, useAddProjectMutation, useUpdateProjectMutation, useDeleteProjectMutation } = projectApi;
 
 export const {
   setProjects,
