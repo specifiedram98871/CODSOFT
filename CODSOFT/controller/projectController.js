@@ -23,7 +23,7 @@ const projectList = async (req, res) => {
   try {
     const projects = await pool.query("SELECT * FROM projects");
     if(projects.rows.length > 0){
-      res.status(200).json({ projects: projects.rows });
+      res.status(200).json( projects.rows );
     }
     else{
       res.status(404).json({ message: "Projects not found" });
@@ -52,10 +52,7 @@ const deleteProject = async (req, res) => {
 
 const assignTask = async (req, res) => {
   try {
-   
     const { project_id,subtask_id} = req.params;
-    
-    
     const project = await pool.query("SELECT subtasks FROM projects WHERE id = $1", [project_id]);
     const subtasks = project.rows[0].subtasks;
     // console.log(subtasks);

@@ -97,4 +97,15 @@ const userDetails = async (req, res) => {
   res.status(200).json(user);
 };
 
-export { registerUser, loginUser, getAllUser, userDetails };
+const logOut = async (req, res, next) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ message: "User logged out" });
+    console.log("User logged out");
+   }
+  catch (error) {
+    next(error);
+  }
+}
+
+export { registerUser, loginUser, getAllUser, userDetails, logOut };
