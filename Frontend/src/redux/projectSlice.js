@@ -87,11 +87,18 @@ export const projectApi = createApi({
         method: "DELETE",
       }),
     }),
+    assignProject: builder.mutation({
+      query: (project_id, user) => ({
+        url: "/project/assign" + project_id,
+        mrthod: "POST",
+        body:user
+      })
+    })
   }),
    
 });
 
-export const { useGetProjectsQuery, useAddProjectMutation, useUpdateProjectMutation, useDeleteProjectMutation } = projectApi;
+export const { useGetProjectsQuery, useAddProjectMutation, useUpdateProjectMutation, useDeleteProjectMutation,useAssignProjectMutation } = projectApi;
 
 export const {
   setProjects,

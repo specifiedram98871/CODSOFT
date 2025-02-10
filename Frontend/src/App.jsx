@@ -10,6 +10,7 @@ import { useLoadUserQuery } from "./redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlice";
 import { useEffect } from "react";
+import ProjectView from "./component/project/ProjectView";
 
 function App() {
   const response = useLoadUserQuery();
@@ -52,6 +53,10 @@ function App() {
       path: "/login",
       element: <Login />,
     },
+    {
+      path: "/projectView/:project_id",
+      element:<ProjectView/>
+    }
   ];
 
   return (

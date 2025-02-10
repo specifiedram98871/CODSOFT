@@ -27,6 +27,9 @@ const userSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
+    userList: (state, action) => {
+      state.user.userList = action.payload;
+    }
   },
 });
 export const userApi = createApi({
@@ -83,7 +86,7 @@ export const userApi = createApi({
   }),
 });
 
-export const { setUser, updateUser, setLoading, logout } = userSlice.actions;
+export const { setUser, updateUser, setLoading, logout,userList } = userSlice.actions;
 export default userSlice.reducer;
 export const { useLogInUserMutation,useGetUserQuery, useGetAllUserQuery, useLogUserMutation,useLoadUserQuery,useLogOutUserMutation } =
   userApi;
