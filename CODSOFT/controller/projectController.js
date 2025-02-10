@@ -48,31 +48,60 @@ const deleteProject = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
+
+const assignProject = async (req, res) => {
+  try {
+    const { project_id } = req.params;
+    const user = req.body;
+    const assignedProject = await pool.query(
+      "UPDATE projects SET assigned_users = $1 WHERE id = $2 RETURNING *",
+      [JSON.stringify(user), project_id]
+    );
+    res.status(200).json({
+      message: "Project assigned successfully",
+      assigned_users:user,
+      project: assignedProject.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const assignTask = async (req, res) => {
   try {
-    const { project_id,subtask_id} = req.params;
-    const project = await pool.query("SELECT subtasks FROM projects WHERE id = $1", [project_id]);
+    const { project_id, subtask_id } = req.params;
+
+    const project = await pool.query(
+      "SELECT subtasks FROM projects WHERE id = $1",
+      [project_id]
+    );
     const subtasks = project.rows[0].subtasks;
     // console.log(subtasks);
     const updatedSubtask = subtasks.map((subtask) => {
       console.log(subtask.assigned);
       if (subtask.id == subtask_id) {
         subtask.assigned = user;
+
         // subtask.status = "assigned";
-      //  console.log(subtask.assigned);
+        //  console.log(subtask.assigned);
       }
       return subtask;
       // console.log(subtask);
-    })
+    });
     // console.log(updatedSubtask);
-    const assignTask =await pool.query("UPDATE projects SET subtasks = $1 WHERE id = $2 RETURNING *", [JSON.stringify(updatedSubtask), project_id]);
-    res.status(201).json({  message: "Task was assigned",assignTask:assignTask.rows[0] });
+    const assignTask = await pool.query(
+      "UPDATE projects SET subtasks = $1 WHERE id = $2 RETURNING *",
+      [JSON.stringify(updatedSubtask), project_id]
+    );
+    res
+      .status(201)
+      .json({ message: "Task was assigned", assignTask: assignTask.rows[0] });
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const trackProgress = async (req, res) => {
   const project_id = 1;
@@ -90,9 +119,9 @@ const trackProgress = async (req, res) => {
 
   res.status(201).json({ subtask });
 };
-const progress = (subtasks, completed) => { 
+const progress = (subtasks, completed) => {
   return completed.length / subtasks.length;
-}
+};
 
 const editProject = async (req, res) => {
   const { project_id } = req.params;
@@ -128,4 +157,12 @@ const editProject = async (req, res) => {
   }
 };
 
-export { addProject, assignTask,trackProgress,editProject,deleteProject,projectList };
+export {
+  addProject,
+  assignTask,
+  trackProgress,
+  editProject,
+  deleteProject,
+  projectList,
+  assignProject
+};

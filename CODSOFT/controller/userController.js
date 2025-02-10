@@ -66,11 +66,10 @@ const loginUser = async (req, res) => {
 const getAllUser = async (req, res) => {
   try {
     const newQuery = await pool.query("SELECT * FROM codsoft");
-    res.json({
-      user: newQuery.rows,
-      message: "Users",
-    });
-    console.log(newQuery.rows);
+    res.json(
+       newQuery.rows, 
+    );
+    // console.log(newQuery.rows);
   } catch (error) {
     console.log(error);
   }
