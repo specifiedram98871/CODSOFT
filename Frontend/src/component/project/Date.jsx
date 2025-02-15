@@ -5,6 +5,7 @@ const DateComponent = ({ date, onChange }) => {
   let formattedDate = "";
   try {
     formattedDate = new Date(date).toISOString().substring(0, 10);
+     console.log(formattedDate);  
   } catch (error) {
     // console.error("Invalid date:", date);
     formattedDate = ""; // Set a default value if the date is invalid
